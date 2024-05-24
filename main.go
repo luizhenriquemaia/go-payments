@@ -1,7 +1,8 @@
 package main
 
 import (
-	"go-payments/configs"
+	"embed"
+	"go-payments/configs/db"
 	"go-payments/internal/payments"
 	"log"
 
@@ -9,14 +10,20 @@ import (
 	"github.com/joho/godotenv"
 )
 
+//go:embed configs/db/migrations/*.sql
+var embedMigrations embed.FS
+
 func main() {
+
 	err := godotenv.Load()
 	if err != nil {
-		log.Print("Error loading .env file, running default settings")
+		log.Print("error loading .env file, running default settings")
 	}
 
-	configs.Init_db()
+	db.Init_db(embedMigrations)
+
 	app := gin.New()
+
 	router := app.Group("api/v1/")
 	{
 		payments.PaymentRoutes(router)

@@ -1,7 +1,8 @@
-package configs
+package db
 
 import (
 	"database/sql"
+	"embed"
 	"log"
 	"os"
 
@@ -22,11 +23,11 @@ func Get_db() *sql.DB {
 	return db
 }
 
-func Init_db() {
+func Init_db(file_sys embed.FS) {
 	db := Get_db()
 	repository := New_repository(db)
 
-	if err := repository.Migrate(); err != nil {
+	if err := repository.Migrate(file_sys); err != nil {
 		log.Fatal(err)
 	}
 }
