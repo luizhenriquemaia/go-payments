@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -35,7 +35,7 @@ func (r *Repository) Migrate(file_sys embed.FS) error {
 		return errors.New(ErrMigration.Error() + " fase 1 " + err.Error())
 	}
 
-	err = goose.Up(r.db, "configs/db/migrations")
+	err = goose.Up(r.db, "configs/database/migrations")
 	if err != nil {
 		return errors.New(ErrMigration.Error() + " fase 2 - " + err.Error())
 	}

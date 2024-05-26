@@ -2,7 +2,7 @@ package main
 
 import (
 	"embed"
-	"go-payments/configs/db"
+	"go-payments/configs/database"
 	"go-payments/internal/payments"
 	"log"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-//go:embed configs/db/migrations/*.sql
+//go:embed configs/database/migrations/*.sql
 var embedMigrations embed.FS
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 		log.Print("error loading .env file, running default settings")
 	}
 
-	db.Init_db(embedMigrations)
+	database.Init_db(embedMigrations)
 
 	app := gin.New()
 
