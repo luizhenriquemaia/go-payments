@@ -20,5 +20,5 @@ then
     helpFunction
 fi
 
-goose -dir "configs/db/migrations" create $file_name sql
+goose -dir "configs/database/migrations" create $file_name sql
 exit 1
