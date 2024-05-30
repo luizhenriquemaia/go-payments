@@ -17,6 +17,14 @@ const (
 	Overdue
 )
 
+func (cc Cost_center) IsValid() bool {
+	switch cc {
+	case Energy, Water, Education, Condominium:
+		return true
+	}
+	return false
+}
+
 func (cc Cost_center) String() string {
 	switch cc {
 	case Energy:
