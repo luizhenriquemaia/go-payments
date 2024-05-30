@@ -34,9 +34,33 @@ func Validate_equal_length(field_level validator.FieldLevel) bool {
 	request_value := field_level.Field().Interface().(string)
 	validation_length, err := strconv.ParseInt(field_level.Param(), 10, 0)
 	if err != nil {
-		panic("Final length of validate only digits couldn't be converted into a integer!")
+		panic("Equal length validation number couldn't be converted into a integer!")
 	}
 	if int(validation_length) == len(request_value) {
+		return true
+	}
+	return false
+}
+
+func Validate_min_length(field_level validator.FieldLevel) bool {
+	request_value := field_level.Field().Interface().(string)
+	min_length, err := strconv.ParseInt(field_level.Param(), 10, 0)
+	if err != nil {
+		panic("Minimum length validation number couldn't be converted into a integer!")
+	}
+	if len(request_value) >= int(min_length) {
+		return true
+	}
+	return false
+}
+
+func Validate_max_length(field_level validator.FieldLevel) bool {
+	request_value := field_level.Field().Interface().(string)
+	max_length, err := strconv.ParseInt(field_level.Param(), 10, 0)
+	if err != nil {
+		panic("Max length validation number couldn't be converted into a integer!")
+	}
+	if len(request_value) <= int(max_length) {
 		return true
 	}
 	return false
@@ -51,6 +75,12 @@ func Init_custom_validators() {
 	}
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		validate.RegisterValidation("equal_length", Validate_equal_length)
+	}
+	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		validate.RegisterValidation("min_length", Validate_min_length)
+	}
+	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		validate.RegisterValidation("max_length", Validate_max_length)
 	}
 	log.Print("custom validators loaded")
 }
