@@ -33,7 +33,7 @@ func (factory *PaymentFactory) Get_from_db(
 		Id:          id,
 		Description: description,
 		Cost_center: Cost_center(cost_center),
-		Status:      status,
+		Status:      Payment_status(status),
 		Bar_code:    bar_code,
 		Updated_at:  updated_at,
 		Created_at:  created_at,

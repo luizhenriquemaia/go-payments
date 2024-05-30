@@ -3,20 +3,20 @@ package payments
 import "time"
 
 type PaymentEntity struct {
-	Id          int64       `json:"id"`
-	Description string      `json:"description"`
-	Cost_center Cost_center `json:"cost_center"`
-	Status      int         `json:"status"`
-	Bar_code    string      `json:"bar_code"`
-	Updated_at  time.Time   `json:"updated_at"`
-	Created_at  time.Time   `json:"created_at"`
+	Id          int64          `json:"id"`
+	Description string         `json:"description"`
+	Cost_center Cost_center    `json:"cost_center"`
+	Status      Payment_status `json:"status"`
+	Bar_code    string         `json:"bar_code"`
+	Updated_at  time.Time      `json:"updated_at"`
+	Created_at  time.Time      `json:"created_at"`
 }
 
 type PaymentEntityResponse struct {
 	Id          int64     `json:"id"`
 	Description string    `json:"description"`
 	Cost_center string    `json:"cost_center"`
-	Status      int       `json:"status"`
+	Status      string    `json:"status"`
 	Bar_code    string    `json:"bar_code"`
 	Updated_at  time.Time `json:"updated_at"`
 	Created_at  time.Time `json:"created_at"`
@@ -53,7 +53,7 @@ func (entity *PaymentEntity) Get_to_resp() *PaymentEntityResponse {
 		Id:          entity.Id,
 		Description: entity.Description,
 		Cost_center: entity.Cost_center.String(),
-		Status:      entity.Status,
+		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,
