@@ -4,6 +4,7 @@ import (
 	"embed"
 	"go-payments/configs/database"
 	"go-payments/internal/payments"
+	"go-payments/utils"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,8 @@ func main() {
 	}
 
 	database.Init_db(embedMigrations)
+
+	utils.Init_custom_validators()
 
 	app := gin.New()
 

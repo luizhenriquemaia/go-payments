@@ -13,6 +13,8 @@ func get_validation_error_msgs(tag string) string {
 		return "This field is required"
 	case "email":
 		return "Invalid email"
+	case "enum":
+		return "Invalid value"
 	}
 	return tag
 }

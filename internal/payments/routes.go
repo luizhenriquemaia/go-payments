@@ -2,7 +2,7 @@ package payments
 
 import (
 	"errors"
-	"go-payments/internal/utils"
+	"go-payments/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
