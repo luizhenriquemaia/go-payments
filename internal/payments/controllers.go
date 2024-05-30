@@ -12,7 +12,7 @@ func getPaymentsController() string {
 
 func addPaymentController(context *gin.Context) (*PaymentEntityResponse, error) {
 	var new_payment AddPaymentEntity
-	if err := context.BindJSON(&new_payment); err != nil {
+	if err := context.ShouldBind(&new_payment); err != nil {
 		return nil, err
 	}
 	repo := PaymentsRepository(database.Get_db())

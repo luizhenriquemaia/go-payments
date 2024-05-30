@@ -23,9 +23,9 @@ type PaymentEntityResponse struct {
 }
 
 type AddPaymentEntity struct {
-	Description string      `validate:"min=3,max=150"`
-	Cost_center Cost_center `validate:"min=0"`
-	Bar_code    string      `validate:"regexp=([0-9[]])"`
+	Description string      `binding:"required" validate:"min=3,max=150"`
+	Cost_center Cost_center `binding:"required" validate:"min=0"`
+	Bar_code    string      `binding:"required" validate:"regexp=([0-9[]])"`
 }
 
 type addPaymentDb struct {
