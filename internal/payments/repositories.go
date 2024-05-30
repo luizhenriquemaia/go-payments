@@ -42,7 +42,7 @@ func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 	retrieve_entity := factory.Get_from_db(
 		int64(new_id),
 		to_db.description,
-		to_db.cost_center,
+		int(to_db.cost_center),
 		new_status,
 		to_db.bar_code,
 		to_db.updated_at,

@@ -2,11 +2,28 @@ package payments
 
 import "time"
 
+type Cost_center int64
+
 const (
-	CC_energy = iota
-	CC_water
-	CC_education
+	Energy Cost_center = iota
+	Water
+	Education
+	Condominium
 )
+
+func (cc Cost_center) String() string {
+	switch cc {
+	case Energy:
+		return "energy"
+	case Water:
+		return "water"
+	case Education:
+		return "education"
+	case Condominium:
+		return "condominium"
+	}
+	return "unknown"
+}
 
 type PaymentModel struct {
 	Id          int64     `json:"id"`

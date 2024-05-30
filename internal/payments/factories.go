@@ -10,7 +10,7 @@ type PaymentFactory struct{}
 
 func (factory *PaymentFactory) Get_to_add(
 	description string,
-	cost_center int,
+	cost_center Cost_center,
 	bar_code string,
 ) AddPaymentEntity {
 	return AddPaymentEntity{
@@ -32,7 +32,7 @@ func (factory *PaymentFactory) Get_from_db(
 	return PaymentEntity{
 		Id:          id,
 		Description: description,
-		Cost_center: cost_center,
+		Cost_center: Cost_center(cost_center),
 		Status:      status,
 		Bar_code:    bar_code,
 		Updated_at:  updated_at,

@@ -8,7 +8,7 @@ func getPaymentsRoute(c *gin.Context) {
 }
 
 func postPaymentsRoute(c *gin.Context) {
-	entity, err := AddPaymentController(c)
+	entity, err := addPaymentController(c)
 	if err != nil {
 		c.IndentedJSON(400, gin.H{"msg": err.Error()})
 		return

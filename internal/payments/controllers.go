@@ -10,7 +10,7 @@ func getPaymentsController() string {
 	return "test"
 }
 
-func AddPaymentController(context *gin.Context) (*PaymentEntity, error) {
+func addPaymentController(context *gin.Context) (*PaymentEntityResponse, error) {
 	var new_payment AddPaymentEntity
 	if err := context.BindJSON(&new_payment); err != nil {
 		return nil, err
@@ -20,5 +20,6 @@ func AddPaymentController(context *gin.Context) (*PaymentEntity, error) {
 	if err != nil {
 		return nil, err
 	}
-	return payment_entity, nil
+	response_entity := payment_entity.Get_to_resp()
+	return response_entity, nil
 }
