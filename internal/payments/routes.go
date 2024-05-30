@@ -19,7 +19,7 @@ func postPaymentsRoute(c *gin.Context) {
 		var validation_errors validator.ValidationErrors
 		if errors.As(err, &validation_errors) {
 			api_error := utils.Get_validation_api_error(validation_errors)
-			c.IndentedJSON(400, gin.H{"msg": err.Error(), "errors": api_error})
+			c.IndentedJSON(400, gin.H{"msg": "Invalid data", "errors": api_error})
 			return
 		}
 		c.IndentedJSON(400, gin.H{"msg": err.Error()})
