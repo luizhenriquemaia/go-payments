@@ -19,6 +19,50 @@ func PaymentsRepository(db *sql.DB) *SqlRepository {
 	return &SqlRepository{db}
 }
 
+func (repo *SqlRepository) Get() (*[]PaymentEntity, error) {
+	rows, err := repo.db.Query(`
+		SELECT * FROM payment ORDER BY id DESC
+	`)
+	if err != nil {
+		log.Printf("get payments error = %v", err)
+		return nil, errors.New("não foi possível retornar os pagamentos salvos")
+	}
+	defer rows.Close()
+
+	var payments_db []PaymentModel
+	for rows.Next() {
+		var payment PaymentModel
+		if err := rows.Scan(
+			&payment.Id,
+			&payment.Description,
+			&payment.Cost_center,
+			&payment.Status,
+			&payment.Bar_code,
+			&payment.Updated_at,
+			&payment.Created_at,
+		); err != nil {
+			log.Printf("parsing payment to entity in get payments error = %v", err)
+			return nil, errors.New("não foi possível retornar os pagamentos salvos")
+		}
+		payments_db = append(payments_db, payment)
+	}
+
+	factory := PaymentFactory{}
+	entities := make([]PaymentEntity, len(payments_db))
+	for i, payment := range payments_db {
+		entities[i] = factory.Get_from_db(
+			payment.Id,
+			payment.Description,
+			payment.Cost_center,
+			payment.Status,
+			payment.Bar_code,
+			payment.Updated_at,
+			payment.Created_at,
+		)
+	}
+	return &entities, nil
+}
+
 func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, error) {
 	to_db := add_entity.Get_to_db()
 	new_id, new_status := -1, -1

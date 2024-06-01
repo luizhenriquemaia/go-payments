@@ -9,8 +9,12 @@ import (
 )
 
 func getPaymentsRoute(c *gin.Context) {
-	data := getPaymentsController()
-	c.IndentedJSON(200, gin.H{"data": data})
+	entitites, err := getPaymentsController()
+	if err != nil {
+		c.IndentedJSON(500, gin.H{"msg": err.Error()})
+		return
+	}
+	c.IndentedJSON(200, gin.H{"data": entitites})
 }
 
 func postPaymentsRoute(c *gin.Context) {

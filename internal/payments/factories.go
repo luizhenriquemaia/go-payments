@@ -39,3 +39,15 @@ func (factory *PaymentFactory) Get_from_db(
 		Created_at:  created_at,
 	}
 }
+
+func (factory *PaymentFactory) Get_to_resp(entity *PaymentEntity) *PaymentEntityResponse {
+	return &PaymentEntityResponse{
+		Id:          entity.Id,
+		Description: entity.Description,
+		Cost_center: entity.Cost_center.String(),
+		Status:      entity.Status.String(),
+		Bar_code:    entity.Bar_code,
+		Updated_at:  entity.Updated_at,
+		Created_at:  entity.Created_at,
+	}
+}
