@@ -36,11 +36,13 @@ func (factory *PaymentFactory) Get_from_db(
 	if err != nil {
 		log.Fatal("Erro on load America/Sao_Paulo timezone for convert payment times")
 	}
+	status_enum, _ := Get_payment_status_by_value(status)
+	cc_enum, _ := Get_cost_center_by_value(cost_center)
 	return PaymentEntity{
 		Id:          id,
 		Description: description,
-		Cost_center: Cost_center(cost_center),
-		Status:      Payment_status(status),
+		Cost_center: cc_enum,
+		Status:      status_enum,
 		Bar_code:    bar_code,
 		Updated_at:  updated_at.In(brazil_tz),
 		Created_at:  created_at.In(brazil_tz),
