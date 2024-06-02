@@ -63,6 +63,81 @@ func (repo *SqlRepository) Get() (*[]PaymentEntity, error) {
 	return &entities, nil
 }
 
+func (repo *SqlRepository) get_filtered_rows(
+	status Payment_status,
+	cost_center Cost_center,
+) (*sql.Rows, error) {
+	if status == StatusNotInformed && cost_center == CcNotInformed {
+		return repo.db.Query(`
+			SELECT * FROM payment ORDER BY id DESC
+		`)
+	} else if status == StatusNotInformed && cost_center != CcNotInformed {
+		return repo.db.Query(`
+			SELECT * FROM payment WHERE cost_center=$1 ORDER BY id DESC
+			`,
+			cost_center,
+		)
+	} else if status != StatusNotInformed && cost_center == CcNotInformed {
+		return repo.db.Query(`
+		SELECT * FROM payment WHERE status=$1 ORDER BY id DESC
+			`,
+			status,
+		)
+	} else {
+		return repo.db.Query(`
+		SELECT * FROM payment WHERE cost_center=$1 AND status=$2 ORDER BY id DESC
+			`,
+			cost_center,
+			status,
+		)
+	}
+}
+
+func (repo *SqlRepository) Fetch_by_status_cost_center(
+	status Payment_status,
+	cost_center Cost_center,
+) (*[]PaymentEntity, error) {
+	rows, err := repo.get_filtered_rows(status, cost_center)
+	if err != nil {
+		log.Printf("get filtered payments error = %v", err)
+		return nil, errors.New("não foi possível retornar os pagamentos filtrados")
+	}
+	defer rows.Close()
+
+	var payments_db []PaymentModel
+	for rows.Next() {
+		var payment PaymentModel
+		if err := rows.Scan(
+			&payment.Id,
+			&payment.Description,
+			&payment.Cost_center,
+			&payment.Status,
+			&payment.Bar_code,
+			&payment.Updated_at,
+			&payment.Created_at,
+		); err != nil {
+			log.Printf("parsing filtered payment to entity in get payments error = %v", err)
+			return nil, errors.New("não foi possível retornar os pagamentos filtrados")
+		}
+		payments_db = append(payments_db, payment)
+	}
+
+	factory := PaymentFactory{}
+	entities := make([]PaymentEntity, len(payments_db))
+	for i, payment := range payments_db {
+		entities[i] = factory.Get_from_db(
+			payment.Id,
+			payment.Description,
+			payment.Cost_center,
+			payment.Status,
+			payment.Bar_code,
+			payment.Updated_at,
+			payment.Created_at,
+		)
+	}
+	return &entities, nil
+}
+
 func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, error) {
 	to_db := add_entity.Get_to_db()
 	new_id, new_status := -1, -1

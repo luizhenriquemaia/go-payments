@@ -22,6 +22,11 @@ type PaymentEntityResponse struct {
 	Created_at  time.Time `json:"created_at"`
 }
 
+type PaymentReqQuery struct {
+	Cost_center Cost_center
+	Status      Payment_status
+}
+
 type AddPaymentEntity struct {
 	Description string      `binding:"required,min_length=3,max_length=150"`
 	Cost_center Cost_center `binding:"required,enum"`
