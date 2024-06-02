@@ -2,7 +2,6 @@ package payments
 
 import (
 	"go-payments/configs/database"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,8 +17,6 @@ func get_payment_filter_query(context *gin.Context) (*PaymentReqQuery, error) {
 	if err != nil && q_status != "all" {
 		return nil, err
 	}
-	log.Printf("Status = %+v, Cost center = %+v", status, cost_center)
-	log.Printf("entity = %+v", &PaymentReqQuery{cost_center, status})
 	return &PaymentReqQuery{cost_center, status}, nil
 }
 
