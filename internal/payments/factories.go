@@ -62,6 +62,9 @@ func (factory *PaymentFactory) Get_to_resp(entity *PaymentEntity) *PaymentEntity
 		Cost_center: entity.Cost_center.String(),
 		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
+		Document:    entity.Document,
+		Receipt:     entity.Receipt,
+		Paid_at:     entity.Paid_at,
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,
 	}
