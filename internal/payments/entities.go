@@ -1,6 +1,7 @@
 package payments
 
 import (
+	"strconv"
 	"time"
 )
 
@@ -39,7 +40,6 @@ type AddPaymentEntity struct {
 	Description string      `binding:"required,min_length=3,max_length=150"`
 	Cost_center Cost_center `binding:"required,enum"`
 	Bar_code    string      `binding:"required,only_digits,equal_length=47"`
-	Document    string
 }
 
 type addPaymentDb struct {
@@ -57,7 +57,7 @@ func (entity *AddPaymentEntity) Get_to_db() *addPaymentDb {
 		description: entity.Description,
 		cost_center: entity.Cost_center,
 		bar_code:    entity.Bar_code,
-		document:    entity.Document,
+		document:    now.Format("200601021504") + strconv.Itoa(int(entity.Cost_center)),
 		updated_at:  now,
 		created_at:  now,
 	}

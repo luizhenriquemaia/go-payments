@@ -150,6 +150,21 @@ func (repo *SqlRepository) Fetch_by_status_cost_center(
 	return &entities, nil
 }
 
+func (repo *SqlRepository) set_document(id int) (*string, error) {
+	new_document := ""
+	err := repo.db.QueryRow(`
+		UPDATE payment 
+		SET document=CONCAT(document, CAST(id AS VARCHAR(20)))
+		WHERE id=$1
+		RETURNING document
+	`, id).Scan(&new_document)
+	if err != nil {
+		log.Printf("update for set document error = %v", err)
+		return nil, errors.New("não foi possível retornar os pagamentos salvos")
+	}
+	return &new_document, nil
+}
+
 func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, error) {
 	to_db := add_entity.Get_to_db()
 	new_id, new_status := -1, -1
@@ -170,6 +185,12 @@ func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 		log.Printf("add payments error = %v | values = %+v | now = %v", err, to_db, to_db.updated_at.Format(time.RFC3339))
 		return nil, errors.New("não foi possível adicionar um novo pagamento com os dados informados")
 	}
+
+	new_document, err := repo.set_document(new_id)
+	if err != nil {
+		return nil, errors.New("não foi possível retornar um nome de documento para o novo pagamento adicionado")
+	}
+
 	factory := &PaymentFactory{}
 	retrieve_entity := factory.Get_from_db(
 		int64(new_id),
@@ -177,7 +198,7 @@ func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 		int(to_db.cost_center),
 		new_status,
 		to_db.bar_code,
-		to_db.document,
+		*new_document,
 		"",
 		nil,
 		to_db.updated_at,
