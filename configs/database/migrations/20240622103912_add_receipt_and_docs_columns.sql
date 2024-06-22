@@ -1,0 +1,11 @@
+-- +goose Up
+ALTER TABLE payment
+ADD COLUMN document VARCHAR(50) NOT NULL DEFAULT(''),
+ADD COLUMN receipt VARCHAR(50) NOT NULL DEFAULT(''),
+ADD COLUMN paid_at TIMESTAMP NULL;
+
+-- +goose Down
+ALTER TABLE payment 
+DROP COLUMN document,
+DROP COLUMN receipt,
+DROP COLUMN paid_at;

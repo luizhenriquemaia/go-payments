@@ -38,6 +38,9 @@ func (repo *SqlRepository) Get() (*[]PaymentEntity, error) {
 			&payment.Cost_center,
 			&payment.Status,
 			&payment.Bar_code,
+			&payment.Document,
+			&payment.Receipt,
+			&payment.Paid_at,
 			&payment.Updated_at,
 			&payment.Created_at,
 		); err != nil {
@@ -56,6 +59,9 @@ func (repo *SqlRepository) Get() (*[]PaymentEntity, error) {
 			payment.Cost_center,
 			payment.Status,
 			payment.Bar_code,
+			payment.Document,
+			payment.Receipt,
+			payment.Paid_at,
 			payment.Updated_at,
 			payment.Created_at,
 		)
@@ -115,6 +121,9 @@ func (repo *SqlRepository) Fetch_by_status_cost_center(
 			&payment.Bar_code,
 			&payment.Updated_at,
 			&payment.Created_at,
+			&payment.Document,
+			&payment.Receipt,
+			&payment.Paid_at,
 		); err != nil {
 			log.Printf("parsing filtered payment to entity in get payments error = %v", err)
 			return nil, errors.New("não foi possível retornar os pagamentos filtrados")
@@ -131,6 +140,9 @@ func (repo *SqlRepository) Fetch_by_status_cost_center(
 			payment.Cost_center,
 			payment.Status,
 			payment.Bar_code,
+			payment.Document,
+			payment.Receipt,
+			payment.Paid_at,
 			payment.Updated_at,
 			payment.Created_at,
 		)
@@ -142,13 +154,14 @@ func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 	to_db := add_entity.Get_to_db()
 	new_id, new_status := -1, -1
 	err := repo.db.QueryRow(`
-		INSERT INTO payment(description, cost_center, bar_code, updated_at, created_at)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO payment(description, cost_center, bar_code, document, updated_at, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id, status
 		`,
 		to_db.description,
 		to_db.cost_center,
 		to_db.bar_code,
+		to_db.document,
 		to_db.updated_at,
 		to_db.created_at,
 	).Scan(&new_id, &new_status)
@@ -164,6 +177,9 @@ func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 		int(to_db.cost_center),
 		new_status,
 		to_db.bar_code,
+		to_db.document,
+		"",
+		nil,
 		to_db.updated_at,
 		to_db.created_at,
 	)
