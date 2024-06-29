@@ -74,6 +74,8 @@ func (repo *SqlRepository) fetchByStatusCC(
 			&payment.Document,
 			&payment.Receipt,
 			&payment.Paid_at,
+			&payment.Method,
+			&payment.Account,
 		); err != nil {
 			log.Printf("parsing filtered payment to entity in get payments error = %v", err)
 			return nil, errors.New("não foi possível retornar os pagamentos filtrados")
@@ -92,6 +94,8 @@ func (repo *SqlRepository) fetchByStatusCC(
 			payment.Bar_code,
 			payment.Document,
 			payment.Receipt,
+			payment.Method,
+			payment.Account,
 			payment.Paid_at,
 			payment.Updated_at,
 			payment.Created_at,
@@ -117,11 +121,11 @@ func (repo *SqlRepository) setDocument(id int) (*string, error) {
 
 func (repo *SqlRepository) add(add_entity *AddPaymentEntity) (*PaymentEntity, error) {
 	to_db := add_entity.getToDb()
-	new_id, new_status := -1, -1
+	new_id, new_status, new_method, new_account := -1, -1, -1, -1
 	err := repo.db.QueryRow(`
 		INSERT INTO payment(description, cost_center, bar_code, document, updated_at, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, status
+		RETURNING id, status, method, account
 		`,
 		to_db.description,
 		to_db.cost_center,
@@ -129,7 +133,7 @@ func (repo *SqlRepository) add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 		to_db.document,
 		to_db.updated_at,
 		to_db.created_at,
-	).Scan(&new_id, &new_status)
+	).Scan(&new_id, &new_status, &new_method, &new_account)
 
 	if err != nil {
 		log.Printf("add payments error = %v | values = %+v | now = %v", err, to_db, to_db.updated_at.Format(time.RFC3339))
@@ -150,6 +154,8 @@ func (repo *SqlRepository) add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 		to_db.bar_code,
 		*new_document,
 		"",
+		int(new_method),
+		int(new_account),
 		nil,
 		to_db.updated_at,
 		to_db.created_at,

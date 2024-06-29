@@ -6,16 +6,18 @@ import (
 )
 
 type PaymentEntity struct {
-	Id          int64         `json:"id"`
-	Description string        `json:"description"`
-	Cost_center CostCenter    `json:"cost_center"`
-	Status      PaymentStatus `json:"status"`
-	Bar_code    string        `json:"bar_code"`
-	Document    string        `json:"document"`
-	Receipt     string        `json:"receipt"`
-	Paid_at     *time.Time    `json:"paid_at"`
-	Updated_at  time.Time     `json:"updated_at"`
-	Created_at  time.Time     `json:"created_at"`
+	Id          int64          `json:"id"`
+	Description string         `json:"description"`
+	Cost_center CostCenter     `json:"cost_center"`
+	Status      PaymentStatus  `json:"status"`
+	Bar_code    string         `json:"bar_code"`
+	Document    string         `json:"document"`
+	Receipt     string         `json:"receipt"`
+	Method      PaymentMethod  `json:"method"`
+	Account     PaymentAccount `json:"account"`
+	Paid_at     *time.Time     `json:"paid_at"`
+	Updated_at  time.Time      `json:"updated_at"`
+	Created_at  time.Time      `json:"created_at"`
 }
 
 type PaymentEntityResponse struct {
@@ -26,6 +28,8 @@ type PaymentEntityResponse struct {
 	Bar_code    string     `json:"bar_code"`
 	Document    string     `json:"document"`
 	Receipt     string     `json:"receipt"`
+	Method      string     `json:"method"`
+	Account     string     `json:"account"`
 	Paid_at     *time.Time `json:"paid_at"`
 	Updated_at  time.Time  `json:"updated_at"`
 	Created_at  time.Time  `json:"created_at"`
@@ -68,11 +72,13 @@ func (entity *PaymentEntity) getToResp() *PaymentEntityResponse {
 	return &PaymentEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
-		Cost_center: entity.Cost_center.string(),
-		Status:      entity.Status.string(),
+		Cost_center: entity.Cost_center.String(),
+		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
 		Receipt:     entity.Receipt,
+		Method:      entity.Method.String(),
+		Account:     entity.Account.String(),
 		Paid_at:     entity.Paid_at,
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,

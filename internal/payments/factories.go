@@ -15,6 +15,8 @@ func (factory *PaymentFactory) getFromDb(
 	bar_code string,
 	document string,
 	receipt string,
+	method int,
+	account int,
 	paid_at *time.Time,
 	updated_at time.Time,
 	created_at time.Time,
@@ -25,6 +27,8 @@ func (factory *PaymentFactory) getFromDb(
 	}
 	status_enum, _ := getPaymentStatusByValue(status)
 	cc_enum, _ := getCostCenterByValue(cost_center)
+	method_enum, _ := getPaymentMethodByValue(method)
+	account_enum, _ := getPaymentAccountByValue(account)
 	return PaymentEntity{
 		Id:          id,
 		Description: description,
@@ -34,6 +38,8 @@ func (factory *PaymentFactory) getFromDb(
 		Document:    document,
 		Receipt:     receipt,
 		Paid_at:     paid_at,
+		Method:      method_enum,
+		Account:     account_enum,
 		Updated_at:  updated_at.In(brazil_tz),
 		Created_at:  created_at.In(brazil_tz),
 	}
@@ -43,12 +49,14 @@ func (factory *PaymentFactory) getToResp(entity *PaymentEntity) *PaymentEntityRe
 	return &PaymentEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
-		Cost_center: entity.Cost_center.string(),
-		Status:      entity.Status.string(),
+		Cost_center: entity.Cost_center.String(),
+		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
 		Receipt:     entity.Receipt,
 		Paid_at:     entity.Paid_at,
+		Method:      entity.Method.String(),
+		Account:     entity.Account.String(),
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,
 	}
