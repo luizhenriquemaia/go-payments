@@ -10,8 +10,8 @@ import (
 	"go-payments/internal/expenses/controllers"
 )
 
-func getPaymentsRoute(c *gin.Context) {
-	entitites, err := controllers.GetPaymentsController(c)
+func getExpensesRoute(c *gin.Context) {
+	entitites, err := controllers.GetExpensesController(c)
 	if err != nil {
 		c.IndentedJSON(500, gin.H{"msg": err.Error()})
 		return
@@ -19,8 +19,8 @@ func getPaymentsRoute(c *gin.Context) {
 	c.IndentedJSON(200, gin.H{"data": entitites})
 }
 
-func postPaymentsRoute(c *gin.Context) {
-	entity, err := controllers.AddPaymentController(c)
+func postExpensesRoute(c *gin.Context) {
+	entity, err := controllers.AddExpensesController(c)
 	if err != nil {
 		var validation_errors validator.ValidationErrors
 		if errors.As(err, &validation_errors) {

@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-type PaymentEntity struct {
+type ExpenseEntity struct {
 	Id          int64                `json:"id"`
 	Description string               `json:"description"`
 	Cost_center enums.CostCenter     `json:"cost_center"`
-	Status      enums.PaymentStatus  `json:"status"`
+	Status      enums.ExpenseStatus  `json:"status"`
 	Bar_code    string               `json:"bar_code"`
 	Document    string               `json:"document"`
 	Receipt     string               `json:"receipt"`
@@ -21,7 +21,7 @@ type PaymentEntity struct {
 	Created_at  time.Time            `json:"created_at"`
 }
 
-type PaymentEntityResponse struct {
+type ExpenseEntityResponse struct {
 	Id          int64      `json:"id"`
 	Description string     `json:"description"`
 	Cost_center string     `json:"cost_center"`
@@ -36,18 +36,18 @@ type PaymentEntityResponse struct {
 	Created_at  time.Time  `json:"created_at"`
 }
 
-type PaymentReqQuery struct {
+type ExpenseReqQuery struct {
 	Cost_center enums.CostCenter
-	Status      enums.PaymentStatus
+	Status      enums.ExpenseStatus
 }
 
-type AddPaymentEntity struct {
+type AddExpenseEntity struct {
 	Description string           `binding:"required,min_length=3,max_length=150"`
 	Cost_center enums.CostCenter `binding:"required,enum"`
 	Bar_code    string           `binding:"required,only_digits,equal_length=47"`
 }
 
-type AddPaymentDb struct {
+type AddExpenseDb struct {
 	Description string
 	Cost_center enums.CostCenter
 	Bar_code    string
@@ -56,9 +56,9 @@ type AddPaymentDb struct {
 	Created_at  time.Time
 }
 
-func (entity *AddPaymentEntity) GetToDb() *AddPaymentDb {
+func (entity *AddExpenseEntity) GetToDb() *AddExpenseDb {
 	now := time.Now().UTC()
-	return &AddPaymentDb{
+	return &AddExpenseDb{
 		Description: entity.Description,
 		Cost_center: entity.Cost_center,
 		Bar_code:    entity.Bar_code,
@@ -69,8 +69,8 @@ func (entity *AddPaymentEntity) GetToDb() *AddPaymentDb {
 }
 
 // Adapter method to get payment entity to response
-func (entity *PaymentEntity) GetToResp() *PaymentEntityResponse {
-	return &PaymentEntityResponse{
+func (entity *ExpenseEntity) GetToResp() *ExpenseEntityResponse {
+	return &ExpenseEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
 		Cost_center: entity.Cost_center.String(),

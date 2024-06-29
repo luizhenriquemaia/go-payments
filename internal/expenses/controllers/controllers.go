@@ -10,22 +10,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getPaymentFilterQuery(context *gin.Context) (*entities.PaymentReqQuery, error) {
+func getExpensesFilterQuery(context *gin.Context) (*entities.ExpenseReqQuery, error) {
 	q_status := context.DefaultQuery("status", "all")
 	q_cost_center := context.DefaultQuery("cost_center", "all")
 	cost_center, err := enums.GetCostCenterByName(q_cost_center)
 	if err != nil && q_cost_center != "all" {
 		return nil, err
 	}
-	status, err := enums.GetPaymentStatusByName(q_status)
+	status, err := enums.GetExpenseStatusByName(q_status)
 	if err != nil && q_status != "all" {
 		return nil, err
 	}
-	return &entities.PaymentReqQuery{Cost_center: cost_center, Status: status}, nil
+	return &entities.ExpenseReqQuery{Cost_center: cost_center, Status: status}, nil
 }
 
-func GetPaymentsController(context *gin.Context) (*[]entities.PaymentEntityResponse, error) {
-	query, err := getPaymentFilterQuery(context)
+func GetExpensesController(context *gin.Context) (*[]entities.ExpenseEntityResponse, error) {
+	query, err := getExpensesFilterQuery(context)
 	if err != nil {
 		return nil, err
 	}
@@ -35,15 +35,15 @@ func GetPaymentsController(context *gin.Context) (*[]entities.PaymentEntityRespo
 		return nil, err
 	}
 	factory := factories.PaymentFactory{}
-	resp_entities := make([]entities.PaymentEntityResponse, len(*e_payments))
+	resp_entities := make([]entities.ExpenseEntityResponse, len(*e_payments))
 	for i, entity := range *e_payments {
 		resp_entities[i] = *factory.GetToResp(&entity)
 	}
 	return &resp_entities, nil
 }
 
-func AddPaymentController(context *gin.Context) (*entities.PaymentEntityResponse, error) {
-	var new_payment entities.AddPaymentEntity
+func AddExpensesController(context *gin.Context) (*entities.ExpenseEntityResponse, error) {
+	var new_payment entities.AddExpenseEntity
 	if err := context.ShouldBind(&new_payment); err != nil {
 		return nil, err
 	}

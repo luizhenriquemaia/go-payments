@@ -22,16 +22,16 @@ func (factory *PaymentFactory) GetFromDb(
 	paid_at *time.Time,
 	updated_at time.Time,
 	created_at time.Time,
-) entities.PaymentEntity {
+) entities.ExpenseEntity {
 	brazil_tz, err := time.LoadLocation("America/Sao_Paulo")
 	if err != nil {
 		log.Fatal("Erro on load America/Sao_Paulo timezone for convert payment times")
 	}
-	status_enum, _ := enums.GetPaymentStatusByValue(status)
+	status_enum, _ := enums.GetExpenseStatusByValue(status)
 	cc_enum, _ := enums.GetCostCenterByValue(cost_center)
 	method_enum, _ := enums.GetPaymentMethodByValue(method)
 	account_enum, _ := enums.GetPaymentAccountByValue(account)
-	return entities.PaymentEntity{
+	return entities.ExpenseEntity{
 		Id:          id,
 		Description: description,
 		Cost_center: cc_enum,
@@ -47,8 +47,8 @@ func (factory *PaymentFactory) GetFromDb(
 	}
 }
 
-func (factory *PaymentFactory) GetToResp(entity *entities.PaymentEntity) *entities.PaymentEntityResponse {
-	return &entities.PaymentEntityResponse{
+func (factory *PaymentFactory) GetToResp(entity *entities.ExpenseEntity) *entities.ExpenseEntityResponse {
+	return &entities.ExpenseEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
 		Cost_center: entity.Cost_center.String(),

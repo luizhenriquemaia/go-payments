@@ -24,7 +24,7 @@ func PaymentsRepository(db *sql.DB) *SqlRepository {
 }
 
 func (repo *SqlRepository) GetFilteredRows(
-	status enums.PaymentStatus,
+	status enums.ExpenseStatus,
 	cost_center enums.CostCenter,
 ) (*sql.Rows, error) {
 	if status == enums.StatusNotInformed && cost_center == enums.CcNotInformed {
@@ -54,9 +54,9 @@ func (repo *SqlRepository) GetFilteredRows(
 }
 
 func (repo *SqlRepository) FetchByStatusCC(
-	status enums.PaymentStatus,
+	status enums.ExpenseStatus,
 	cost_center enums.CostCenter,
-) (*[]entities.PaymentEntity, error) {
+) (*[]entities.ExpenseEntity, error) {
 	rows, err := repo.GetFilteredRows(status, cost_center)
 	if err != nil {
 		log.Printf("get filtered payments error = %v", err)
@@ -64,9 +64,9 @@ func (repo *SqlRepository) FetchByStatusCC(
 	}
 	defer rows.Close()
 
-	var payments_db []models.PaymentModel
+	var payments_db []models.ExpenseModel
 	for rows.Next() {
-		var payment models.PaymentModel
+		var payment models.ExpenseModel
 		if err := rows.Scan(
 			&payment.Id,
 			&payment.Description,
@@ -88,7 +88,7 @@ func (repo *SqlRepository) FetchByStatusCC(
 	}
 
 	factory := factories.PaymentFactory{}
-	entities := make([]entities.PaymentEntity, len(payments_db))
+	entities := make([]entities.ExpenseEntity, len(payments_db))
 	for i, payment := range payments_db {
 		entities[i] = factory.GetFromDb(
 			payment.Id,
@@ -123,7 +123,7 @@ func (repo *SqlRepository) setDocument(id int) (*string, error) {
 	return &new_document, nil
 }
 
-func (repo *SqlRepository) Add(add_entity *entities.AddPaymentEntity) (*entities.PaymentEntity, error) {
+func (repo *SqlRepository) Add(add_entity *entities.AddExpenseEntity) (*entities.ExpenseEntity, error) {
 	to_db := add_entity.GetToDb()
 	new_id, new_status, new_method, new_account := -1, -1, -1, -1
 	err := repo.db.QueryRow(`

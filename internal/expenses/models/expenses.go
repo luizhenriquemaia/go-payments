@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type PaymentModel struct {
+type ExpenseModel struct {
 	Id          int64      `json:"id"`
 	Description string     `json:"description"`
 	Cost_center int        `json:"cost_center"`
