@@ -19,59 +19,9 @@ func PaymentsRepository(db *sql.DB) *SqlRepository {
 	return &SqlRepository{db}
 }
 
-func (repo *SqlRepository) Get() (*[]PaymentEntity, error) {
-	rows, err := repo.db.Query(`
-		SELECT * FROM payment ORDER BY id DESC
-	`)
-	if err != nil {
-		log.Printf("get payments error = %v", err)
-		return nil, errors.New("não foi possível retornar os pagamentos salvos")
-	}
-	defer rows.Close()
-
-	var payments_db []PaymentModel
-	for rows.Next() {
-		var payment PaymentModel
-		if err := rows.Scan(
-			&payment.Id,
-			&payment.Description,
-			&payment.Cost_center,
-			&payment.Status,
-			&payment.Bar_code,
-			&payment.Document,
-			&payment.Receipt,
-			&payment.Paid_at,
-			&payment.Updated_at,
-			&payment.Created_at,
-		); err != nil {
-			log.Printf("parsing payment to entity in get payments error = %v", err)
-			return nil, errors.New("não foi possível retornar os pagamentos salvos")
-		}
-		payments_db = append(payments_db, payment)
-	}
-
-	factory := PaymentFactory{}
-	entities := make([]PaymentEntity, len(payments_db))
-	for i, payment := range payments_db {
-		entities[i] = factory.Get_from_db(
-			payment.Id,
-			payment.Description,
-			payment.Cost_center,
-			payment.Status,
-			payment.Bar_code,
-			payment.Document,
-			payment.Receipt,
-			payment.Paid_at,
-			payment.Updated_at,
-			payment.Created_at,
-		)
-	}
-	return &entities, nil
-}
-
-func (repo *SqlRepository) get_filtered_rows(
-	status Payment_status,
-	cost_center Cost_center,
+func (repo *SqlRepository) getFilteredRows(
+	status PaymentStatus,
+	cost_center CostCenter,
 ) (*sql.Rows, error) {
 	if status == StatusNotInformed && cost_center == CcNotInformed {
 		return repo.db.Query(`
@@ -99,11 +49,11 @@ func (repo *SqlRepository) get_filtered_rows(
 	}
 }
 
-func (repo *SqlRepository) Fetch_by_status_cost_center(
-	status Payment_status,
-	cost_center Cost_center,
+func (repo *SqlRepository) fetchByStatusCC(
+	status PaymentStatus,
+	cost_center CostCenter,
 ) (*[]PaymentEntity, error) {
-	rows, err := repo.get_filtered_rows(status, cost_center)
+	rows, err := repo.getFilteredRows(status, cost_center)
 	if err != nil {
 		log.Printf("get filtered payments error = %v", err)
 		return nil, errors.New("não foi possível retornar os pagamentos filtrados")
@@ -134,7 +84,7 @@ func (repo *SqlRepository) Fetch_by_status_cost_center(
 	factory := PaymentFactory{}
 	entities := make([]PaymentEntity, len(payments_db))
 	for i, payment := range payments_db {
-		entities[i] = factory.Get_from_db(
+		entities[i] = factory.getFromDb(
 			payment.Id,
 			payment.Description,
 			payment.Cost_center,
@@ -150,7 +100,7 @@ func (repo *SqlRepository) Fetch_by_status_cost_center(
 	return &entities, nil
 }
 
-func (repo *SqlRepository) set_document(id int) (*string, error) {
+func (repo *SqlRepository) setDocument(id int) (*string, error) {
 	new_document := ""
 	err := repo.db.QueryRow(`
 		UPDATE payment 
@@ -165,8 +115,8 @@ func (repo *SqlRepository) set_document(id int) (*string, error) {
 	return &new_document, nil
 }
 
-func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, error) {
-	to_db := add_entity.Get_to_db()
+func (repo *SqlRepository) add(add_entity *AddPaymentEntity) (*PaymentEntity, error) {
+	to_db := add_entity.getToDb()
 	new_id, new_status := -1, -1
 	err := repo.db.QueryRow(`
 		INSERT INTO payment(description, cost_center, bar_code, document, updated_at, created_at)
@@ -186,13 +136,13 @@ func (repo *SqlRepository) Add(add_entity *AddPaymentEntity) (*PaymentEntity, er
 		return nil, errors.New("não foi possível adicionar um novo pagamento com os dados informados")
 	}
 
-	new_document, err := repo.set_document(new_id)
+	new_document, err := repo.setDocument(new_id)
 	if err != nil {
 		return nil, errors.New("não foi possível retornar um nome de documento para o novo pagamento adicionado")
 	}
 
 	factory := &PaymentFactory{}
-	retrieve_entity := factory.Get_from_db(
+	retrieve_entity := factory.getFromDb(
 		int64(new_id),
 		to_db.description,
 		int(to_db.cost_center),

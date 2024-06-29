@@ -6,16 +6,16 @@ import (
 )
 
 type PaymentEntity struct {
-	Id          int64          `json:"id"`
-	Description string         `json:"description"`
-	Cost_center Cost_center    `json:"cost_center"`
-	Status      Payment_status `json:"status"`
-	Bar_code    string         `json:"bar_code"`
-	Document    string         `json:"document"`
-	Receipt     string         `json:"receipt"`
-	Paid_at     *time.Time     `json:"paid_at"`
-	Updated_at  time.Time      `json:"updated_at"`
-	Created_at  time.Time      `json:"created_at"`
+	Id          int64         `json:"id"`
+	Description string        `json:"description"`
+	Cost_center CostCenter    `json:"cost_center"`
+	Status      PaymentStatus `json:"status"`
+	Bar_code    string        `json:"bar_code"`
+	Document    string        `json:"document"`
+	Receipt     string        `json:"receipt"`
+	Paid_at     *time.Time    `json:"paid_at"`
+	Updated_at  time.Time     `json:"updated_at"`
+	Created_at  time.Time     `json:"created_at"`
 }
 
 type PaymentEntityResponse struct {
@@ -32,26 +32,26 @@ type PaymentEntityResponse struct {
 }
 
 type PaymentReqQuery struct {
-	Cost_center Cost_center
-	Status      Payment_status
+	Cost_center CostCenter
+	Status      PaymentStatus
 }
 
 type AddPaymentEntity struct {
-	Description string      `binding:"required,min_length=3,max_length=150"`
-	Cost_center Cost_center `binding:"required,enum"`
-	Bar_code    string      `binding:"required,only_digits,equal_length=47"`
+	Description string     `binding:"required,min_length=3,max_length=150"`
+	Cost_center CostCenter `binding:"required,enum"`
+	Bar_code    string     `binding:"required,only_digits,equal_length=47"`
 }
 
 type addPaymentDb struct {
 	description string
-	cost_center Cost_center
+	cost_center CostCenter
 	bar_code    string
 	document    string
 	updated_at  time.Time
 	created_at  time.Time
 }
 
-func (entity *AddPaymentEntity) Get_to_db() *addPaymentDb {
+func (entity *AddPaymentEntity) getToDb() *addPaymentDb {
 	now := time.Now().UTC()
 	return &addPaymentDb{
 		description: entity.Description,
@@ -64,12 +64,12 @@ func (entity *AddPaymentEntity) Get_to_db() *addPaymentDb {
 }
 
 // Adapter method to get payment entity to response
-func (entity *PaymentEntity) Get_to_resp() *PaymentEntityResponse {
+func (entity *PaymentEntity) getToResp() *PaymentEntityResponse {
 	return &PaymentEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
-		Cost_center: entity.Cost_center.String(),
-		Status:      entity.Status.String(),
+		Cost_center: entity.Cost_center.string(),
+		Status:      entity.Status.string(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
 		Receipt:     entity.Receipt,

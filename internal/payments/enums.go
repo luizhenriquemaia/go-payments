@@ -4,18 +4,18 @@ import (
 	"errors"
 )
 
-type Cost_center int64
-type Payment_status int64
+type CostCenter int64
+type PaymentStatus int64
 
 const (
-	CcNotInformed Cost_center = -1
-	CcEnergy      Cost_center = 0
-	CcWater       Cost_center = 1
-	CcEducation   Cost_center = 2
-	CcCondominium Cost_center = 3
+	CcNotInformed CostCenter = -1
+	CcEnergy      CostCenter = 0
+	CcWater       CostCenter = 1
+	CcEducation   CostCenter = 2
+	CcCondominium CostCenter = 3
 )
 
-var CostCenters = map[Cost_center]string{
+var CostCenters = map[CostCenter]string{
 	CcNotInformed: "not_informed",
 	CcEnergy:      "energy",
 	CcWater:       "water",
@@ -24,14 +24,14 @@ var CostCenters = map[Cost_center]string{
 }
 
 const (
-	StatusNotInformed  Payment_status = -1
-	StatusPending      Payment_status = 0
-	StatusPaid         Payment_status = 1
-	StatusPaymentError Payment_status = 2
-	StatusOverdue      Payment_status = 3
+	StatusNotInformed  PaymentStatus = -1
+	StatusPending      PaymentStatus = 0
+	StatusPaid         PaymentStatus = 1
+	StatusPaymentError PaymentStatus = 2
+	StatusOverdue      PaymentStatus = 3
 )
 
-var PaymentStatuses = map[Payment_status]string{
+var PaymentStatuses = map[PaymentStatus]string{
 	StatusNotInformed:  "not_informed",
 	StatusPending:      "pending",
 	StatusPaid:         "paid",
@@ -39,28 +39,28 @@ var PaymentStatuses = map[Payment_status]string{
 	StatusOverdue:      "overdue",
 }
 
-func (cc Cost_center) IsValid() bool {
+func (cc CostCenter) IsValid() bool {
 	if cc >= 0 && cc <= 3 {
 		return true
 	}
 	return false
 }
 
-func (cc Cost_center) String() string {
+func (cc CostCenter) string() string {
 	if cc < -1 || cc > 3 {
 		return "unknown"
 	}
 	return CostCenters[cc]
 }
 
-func Get_cost_center_by_value(cc int) (Cost_center, error) {
+func getCostCenterByValue(cc int) (CostCenter, error) {
 	if cc < -1 || cc > 3 {
 		return CcNotInformed, errors.New("centro de custo inválido")
 	}
-	return Cost_center(cc), nil
+	return CostCenter(cc), nil
 }
 
-func Get_cost_center_by_name(cc_string string) (Cost_center, error) {
+func getCostCenterByName(cc_string string) (CostCenter, error) {
 	switch cc_string {
 	case "energy":
 		return CcEnergy, nil
@@ -74,21 +74,21 @@ func Get_cost_center_by_name(cc_string string) (Cost_center, error) {
 	return CcNotInformed, errors.New("centro de custo inválido")
 }
 
-func (status Payment_status) String() string {
+func (status PaymentStatus) string() string {
 	if status < -1 || status > 3 {
 		return "unknown"
 	}
 	return PaymentStatuses[status]
 }
 
-func Get_payment_status_by_value(status int) (Payment_status, error) {
+func getPaymentStatusByValue(status int) (PaymentStatus, error) {
 	if status < -1 || status > 3 {
 		return StatusNotInformed, errors.New("centro de custo inválido")
 	}
-	return Payment_status(status), nil
+	return PaymentStatus(status), nil
 }
 
-func Get_payment_status_by_name(status string) (Payment_status, error) {
+func getPaymentStatusByName(status string) (PaymentStatus, error) {
 	switch status {
 	case "pending":
 		return StatusPending, nil

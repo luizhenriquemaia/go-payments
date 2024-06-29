@@ -5,25 +5,9 @@ import (
 	"time"
 )
 
-type AbstractPaymentFactory interface {
-	Get_to_add() AddPaymentEntity
-}
-
 type PaymentFactory struct{}
 
-func (factory *PaymentFactory) Get_to_add(
-	description string,
-	cost_center Cost_center,
-	bar_code string,
-) AddPaymentEntity {
-	return AddPaymentEntity{
-		Description: description,
-		Cost_center: cost_center,
-		Bar_code:    bar_code,
-	}
-}
-
-func (factory *PaymentFactory) Get_from_db(
+func (factory *PaymentFactory) getFromDb(
 	id int64,
 	description string,
 	cost_center int,
@@ -39,8 +23,8 @@ func (factory *PaymentFactory) Get_from_db(
 	if err != nil {
 		log.Fatal("Erro on load America/Sao_Paulo timezone for convert payment times")
 	}
-	status_enum, _ := Get_payment_status_by_value(status)
-	cc_enum, _ := Get_cost_center_by_value(cost_center)
+	status_enum, _ := getPaymentStatusByValue(status)
+	cc_enum, _ := getCostCenterByValue(cost_center)
 	return PaymentEntity{
 		Id:          id,
 		Description: description,
@@ -55,12 +39,12 @@ func (factory *PaymentFactory) Get_from_db(
 	}
 }
 
-func (factory *PaymentFactory) Get_to_resp(entity *PaymentEntity) *PaymentEntityResponse {
+func (factory *PaymentFactory) getToResp(entity *PaymentEntity) *PaymentEntityResponse {
 	return &PaymentEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
-		Cost_center: entity.Cost_center.String(),
-		Status:      entity.Status.String(),
+		Cost_center: entity.Cost_center.string(),
+		Status:      entity.Status.string(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
 		Receipt:     entity.Receipt,
