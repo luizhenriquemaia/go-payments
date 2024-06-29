@@ -19,7 +19,7 @@ type SqlRepository struct {
 	db *sql.DB
 }
 
-func PaymentsRepository(db *sql.DB) *SqlRepository {
+func ExpensesRepository(db *sql.DB) *SqlRepository {
 	return &SqlRepository{db}
 }
 
@@ -29,23 +29,23 @@ func (repo *SqlRepository) GetFilteredRows(
 ) (*sql.Rows, error) {
 	if status == enums.StatusNotInformed && cost_center == enums.CcNotInformed {
 		return repo.db.Query(`
-			SELECT * FROM payment ORDER BY id DESC
+			SELECT * FROM expense ORDER BY id DESC
 		`)
 	} else if status == enums.StatusNotInformed && cost_center != enums.CcNotInformed {
 		return repo.db.Query(`
-			SELECT * FROM payment WHERE cost_center=$1 ORDER BY id DESC
+			SELECT * FROM expense WHERE cost_center=$1 ORDER BY id DESC
 			`,
 			cost_center,
 		)
 	} else if status != enums.StatusNotInformed && cost_center == enums.CcNotInformed {
 		return repo.db.Query(`
-		SELECT * FROM payment WHERE status=$1 ORDER BY id DESC
+		SELECT * FROM expense WHERE status=$1 ORDER BY id DESC
 			`,
 			status,
 		)
 	} else {
 		return repo.db.Query(`
-		SELECT * FROM payment WHERE cost_center=$1 AND status=$2 ORDER BY id DESC
+		SELECT * FROM expense WHERE cost_center=$1 AND status=$2 ORDER BY id DESC
 			`,
 			cost_center,
 			status,
@@ -59,50 +59,42 @@ func (repo *SqlRepository) FetchByStatusCC(
 ) (*[]entities.ExpenseEntity, error) {
 	rows, err := repo.GetFilteredRows(status, cost_center)
 	if err != nil {
-		log.Printf("get filtered payments error = %v", err)
-		return nil, errors.New("não foi possível retornar os pagamentos filtrados")
+		log.Printf("get filtered expenses error = %v", err)
+		return nil, errors.New("não foi possível retornar as despesas filtradas")
 	}
 	defer rows.Close()
 
-	var payments_db []models.ExpenseModel
+	var expenses_db []models.ExpenseModel
 	for rows.Next() {
-		var payment models.ExpenseModel
+		var expense models.ExpenseModel
 		if err := rows.Scan(
-			&payment.Id,
-			&payment.Description,
-			&payment.Cost_center,
-			&payment.Status,
-			&payment.Bar_code,
-			&payment.Updated_at,
-			&payment.Created_at,
-			&payment.Document,
-			&payment.Receipt,
-			&payment.Paid_at,
-			&payment.Method,
-			&payment.Account,
+			&expense.Id,
+			&expense.Description,
+			&expense.Cost_center,
+			&expense.Status,
+			&expense.Bar_code,
+			&expense.Updated_at,
+			&expense.Created_at,
+			&expense.Document,
 		); err != nil {
-			log.Printf("parsing filtered payment to entity in get payments error = %v", err)
-			return nil, errors.New("não foi possível retornar os pagamentos filtrados")
+			log.Printf("parsing filtered expense to entity in get expenses error = %v", err)
+			return nil, errors.New("não foi possível retornar as despesas filtradas")
 		}
-		payments_db = append(payments_db, payment)
+		expenses_db = append(expenses_db, expense)
 	}
 
 	factory := factories.PaymentFactory{}
-	entities := make([]entities.ExpenseEntity, len(payments_db))
-	for i, payment := range payments_db {
+	entities := make([]entities.ExpenseEntity, len(expenses_db))
+	for i, expense := range expenses_db {
 		entities[i] = factory.GetFromDb(
-			payment.Id,
-			payment.Description,
-			payment.Cost_center,
-			payment.Status,
-			payment.Bar_code,
-			payment.Document,
-			payment.Receipt,
-			payment.Method,
-			payment.Account,
-			payment.Paid_at,
-			payment.Updated_at,
-			payment.Created_at,
+			expense.Id,
+			expense.Description,
+			expense.Cost_center,
+			expense.Status,
+			expense.Bar_code,
+			expense.Document,
+			expense.Updated_at,
+			expense.Created_at,
 		)
 	}
 	return &entities, nil
@@ -111,25 +103,25 @@ func (repo *SqlRepository) FetchByStatusCC(
 func (repo *SqlRepository) setDocument(id int) (*string, error) {
 	new_document := ""
 	err := repo.db.QueryRow(`
-		UPDATE payment 
+		UPDATE expense 
 		SET document=CONCAT(document, CAST(id AS VARCHAR(20)))
 		WHERE id=$1
 		RETURNING document
 	`, id).Scan(&new_document)
 	if err != nil {
 		log.Printf("update for set document error = %v", err)
-		return nil, errors.New("não foi possível retornar os pagamentos salvos")
+		return nil, errors.New("não foi possível retornar as despesas salvas")
 	}
 	return &new_document, nil
 }
 
 func (repo *SqlRepository) Add(add_entity *entities.AddExpenseEntity) (*entities.ExpenseEntity, error) {
 	to_db := add_entity.GetToDb()
-	new_id, new_status, new_method, new_account := -1, -1, -1, -1
+	new_id, new_status := -1, -1
 	err := repo.db.QueryRow(`
-		INSERT INTO payment(description, cost_center, bar_code, document, updated_at, created_at)
+		INSERT INTO expense(description, cost_center, bar_code, document, updated_at, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, status, method, account
+		RETURNING id, status
 		`,
 		to_db.Description,
 		to_db.Cost_center,
@@ -137,16 +129,16 @@ func (repo *SqlRepository) Add(add_entity *entities.AddExpenseEntity) (*entities
 		to_db.Document,
 		to_db.Updated_at,
 		to_db.Created_at,
-	).Scan(&new_id, &new_status, &new_method, &new_account)
+	).Scan(&new_id, &new_status)
 
 	if err != nil {
-		log.Printf("add payments error = %v | values = %+v | now = %v", err, to_db, to_db.Updated_at.Format(time.RFC3339))
-		return nil, errors.New("não foi possível adicionar um novo pagamento com os dados informados")
+		log.Printf("add expenses error = %v | values = %+v | now = %v", err, to_db, to_db.Updated_at.Format(time.RFC3339))
+		return nil, errors.New("não foi possível adicionar uma nova despesa com os dados informados")
 	}
 
 	new_document, err := repo.setDocument(new_id)
 	if err != nil {
-		return nil, errors.New("não foi possível retornar um nome de documento para o novo pagamento adicionado")
+		return nil, errors.New("não foi possível retornar um nome de documento para a nova despesa adicionada")
 	}
 
 	factory := &factories.PaymentFactory{}
@@ -157,10 +149,6 @@ func (repo *SqlRepository) Add(add_entity *entities.AddExpenseEntity) (*entities
 		new_status,
 		to_db.Bar_code,
 		*new_document,
-		"",
-		int(new_method),
-		int(new_account),
-		nil,
 		to_db.Updated_at,
 		to_db.Created_at,
 	)

@@ -29,7 +29,7 @@ func GetExpensesController(context *gin.Context) (*[]entities.ExpenseEntityRespo
 	if err != nil {
 		return nil, err
 	}
-	repo := repositories.PaymentsRepository(database.Get_db())
+	repo := repositories.ExpensesRepository(database.Get_db())
 	e_payments, err := repo.FetchByStatusCC(query.Status, query.Cost_center)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func AddExpensesController(context *gin.Context) (*entities.ExpenseEntityRespons
 	if err := context.ShouldBind(&new_payment); err != nil {
 		return nil, err
 	}
-	repo := repositories.PaymentsRepository(database.Get_db())
+	repo := repositories.ExpensesRepository(database.Get_db())
 	payment_entity, err := repo.Add(&new_payment)
 	if err != nil {
 		return nil, err

@@ -16,10 +16,6 @@ func (factory *PaymentFactory) GetFromDb(
 	status int,
 	bar_code string,
 	document string,
-	receipt string,
-	method int,
-	account int,
-	paid_at *time.Time,
 	updated_at time.Time,
 	created_at time.Time,
 ) entities.ExpenseEntity {
@@ -29,8 +25,6 @@ func (factory *PaymentFactory) GetFromDb(
 	}
 	status_enum, _ := enums.GetExpenseStatusByValue(status)
 	cc_enum, _ := enums.GetCostCenterByValue(cost_center)
-	method_enum, _ := enums.GetPaymentMethodByValue(method)
-	account_enum, _ := enums.GetPaymentAccountByValue(account)
 	return entities.ExpenseEntity{
 		Id:          id,
 		Description: description,
@@ -38,10 +32,6 @@ func (factory *PaymentFactory) GetFromDb(
 		Status:      status_enum,
 		Bar_code:    bar_code,
 		Document:    document,
-		Receipt:     receipt,
-		Paid_at:     paid_at,
-		Method:      method_enum,
-		Account:     account_enum,
 		Updated_at:  updated_at.In(brazil_tz),
 		Created_at:  created_at.In(brazil_tz),
 	}
@@ -55,10 +45,6 @@ func (factory *PaymentFactory) GetToResp(entity *entities.ExpenseEntity) *entiti
 		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
-		Receipt:     entity.Receipt,
-		Paid_at:     entity.Paid_at,
-		Method:      entity.Method.String(),
-		Account:     entity.Account.String(),
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,
 	}
