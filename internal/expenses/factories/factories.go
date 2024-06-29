@@ -1,13 +1,15 @@
-package payments
+package factories
 
 import (
+	"go-payments/internal/expenses/entities"
+	"go-payments/internal/expenses/enums"
 	"log"
 	"time"
 )
 
 type PaymentFactory struct{}
 
-func (factory *PaymentFactory) getFromDb(
+func (factory *PaymentFactory) GetFromDb(
 	id int64,
 	description string,
 	cost_center int,
@@ -20,16 +22,16 @@ func (factory *PaymentFactory) getFromDb(
 	paid_at *time.Time,
 	updated_at time.Time,
 	created_at time.Time,
-) PaymentEntity {
+) entities.PaymentEntity {
 	brazil_tz, err := time.LoadLocation("America/Sao_Paulo")
 	if err != nil {
 		log.Fatal("Erro on load America/Sao_Paulo timezone for convert payment times")
 	}
-	status_enum, _ := getPaymentStatusByValue(status)
-	cc_enum, _ := getCostCenterByValue(cost_center)
-	method_enum, _ := getPaymentMethodByValue(method)
-	account_enum, _ := getPaymentAccountByValue(account)
-	return PaymentEntity{
+	status_enum, _ := enums.GetPaymentStatusByValue(status)
+	cc_enum, _ := enums.GetCostCenterByValue(cost_center)
+	method_enum, _ := enums.GetPaymentMethodByValue(method)
+	account_enum, _ := enums.GetPaymentAccountByValue(account)
+	return entities.PaymentEntity{
 		Id:          id,
 		Description: description,
 		Cost_center: cc_enum,
@@ -45,8 +47,8 @@ func (factory *PaymentFactory) getFromDb(
 	}
 }
 
-func (factory *PaymentFactory) getToResp(entity *PaymentEntity) *PaymentEntityResponse {
-	return &PaymentEntityResponse{
+func (factory *PaymentFactory) GetToResp(entity *entities.PaymentEntity) *entities.PaymentEntityResponse {
+	return &entities.PaymentEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,
 		Cost_center: entity.Cost_center.String(),

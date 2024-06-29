@@ -3,7 +3,7 @@ package main
 import (
 	"embed"
 	"go-payments/configs/database"
-	"go-payments/internal/payments"
+	"go-payments/internal/expenses/routes"
 	"go-payments/utils"
 	"log"
 
@@ -29,7 +29,7 @@ func main() {
 
 	router := app.Group("api/v1/")
 	{
-		payments.PaymentRoutes(router)
+		routes.ExpensesRoutes(router)
 	}
 	app.Run("localhost:8000")
 }

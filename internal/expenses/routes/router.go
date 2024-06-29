@@ -1,8 +1,8 @@
-package payments
+package routes
 
 import "github.com/gin-gonic/gin"
 
-func PaymentRoutes(superRouter *gin.RouterGroup) {
+func ExpensesRoutes(superRouter *gin.RouterGroup) {
 	router := superRouter.Group("/payment")
 	{
 		router.GET("", getPaymentsRoute)

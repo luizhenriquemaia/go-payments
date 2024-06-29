@@ -1,4 +1,4 @@
-package payments
+package enums
 
 import (
 	"errors"
@@ -104,35 +104,35 @@ func (account PaymentAccount) String() string {
 	return PaymentAccounts[account]
 }
 
-func getCostCenterByValue(cc int) (CostCenter, error) {
+func GetCostCenterByValue(cc int) (CostCenter, error) {
 	if cc < -1 || cc > 3 {
 		return CcNotInformed, errors.New("centro de custo inválido")
 	}
 	return CostCenter(cc), nil
 }
 
-func getPaymentStatusByValue(status int) (PaymentStatus, error) {
+func GetPaymentStatusByValue(status int) (PaymentStatus, error) {
 	if status < -1 || status > 3 {
 		return StatusNotInformed, errors.New("centro de custo inválido")
 	}
 	return PaymentStatus(status), nil
 }
 
-func getPaymentMethodByValue(method int) (PaymentMethod, error) {
+func GetPaymentMethodByValue(method int) (PaymentMethod, error) {
 	if method < -1 || method > 2 {
 		return PaymentMethodNotInformed, errors.New("método de pagamento inválido")
 	}
 	return PaymentMethod(method), nil
 }
 
-func getPaymentAccountByValue(account int) (PaymentAccount, error) {
+func GetPaymentAccountByValue(account int) (PaymentAccount, error) {
 	if account < -1 || account > 2 {
 		return PaymentAccountNotInformed, errors.New("conta de pagamento inválido")
 	}
 	return PaymentAccount(account), nil
 }
 
-func getCostCenterByName(cc_string string) (CostCenter, error) {
+func GetCostCenterByName(cc_string string) (CostCenter, error) {
 	switch cc_string {
 	case "energy":
 		return CcEnergy, nil
@@ -146,7 +146,7 @@ func getCostCenterByName(cc_string string) (CostCenter, error) {
 	return CcNotInformed, errors.New("centro de custo inválido")
 }
 
-func getPaymentStatusByName(status string) (PaymentStatus, error) {
+func GetPaymentStatusByName(status string) (PaymentStatus, error) {
 	switch status {
 	case "pending":
 		return StatusPending, nil
