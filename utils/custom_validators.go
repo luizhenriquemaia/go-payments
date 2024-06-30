@@ -14,12 +14,20 @@ type Enum interface {
 }
 
 func Validate_enum(field_level validator.FieldLevel) bool {
-	value := field_level.Field().Interface().(Enum)
+	value, ok := field_level.Field().Interface().(Enum)
+	if !ok {
+		log.Printf("fail on converting Enum %v", field_level)
+		panic("failed the conversion to enum in validation")
+	}
 	return value.IsValid()
 }
 
 func Validate_only_digits(field_level validator.FieldLevel) bool {
-	request_value := field_level.Field().Interface().(string)
+	request_value, ok := field_level.Field().Interface().(string)
+	if !ok {
+		log.Printf("fail on converting to string the value %v", field_level.Field().Interface())
+		panic("failed the conversion to string in only digits validation")
+	}
 	re := regexp.MustCompile(`\D+`)
 	parsed_str := re.ReplaceAllString(request_value, "")
 	parsed_length := len(parsed_str)
