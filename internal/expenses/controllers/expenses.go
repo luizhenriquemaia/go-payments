@@ -6,6 +6,7 @@ import (
 	"go-payments/internal/expenses/enums"
 	"go-payments/internal/expenses/factories"
 	"go-payments/internal/expenses/repositories"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,12 +30,12 @@ func GetExpensesController(context *gin.Context) (*[]entities.ExpenseEntityRespo
 	if err != nil {
 		return nil, err
 	}
-	repo := repositories.ExpensesRepository(database.Get_db())
+	repo := repositories.GetExpensesRepository(database.Get_db())
 	e_payments, err := repo.FetchByStatusCC(query.Status, query.Cost_center)
 	if err != nil {
 		return nil, err
 	}
-	factory := factories.PaymentFactory{}
+	factory := factories.ExpenseFactory{}
 	resp_entities := make([]entities.ExpenseEntityResponse, len(*e_payments))
 	for i, entity := range *e_payments {
 		resp_entities[i] = *factory.GetToResp(&entity)
@@ -43,19 +44,16 @@ func GetExpensesController(context *gin.Context) (*[]entities.ExpenseEntityRespo
 }
 
 func AddExpensesController(context *gin.Context) (*entities.ExpenseEntityResponse, error) {
-	var new_payment entities.AddExpenseEntity
-	if err := context.ShouldBind(&new_payment); err != nil {
+	var new_expense entities.AddExpenseEntity
+	log.Printf("controller 13 %+v", new_expense)
+	if err := context.ShouldBind(&new_expense); err != nil {
 		return nil, err
 	}
-	repo := repositories.ExpensesRepository(database.Get_db())
-	payment_entity, err := repo.Add(&new_payment)
+	repo := repositories.GetExpensesRepository(database.Get_db())
+	expense_entity, err := repo.Add(&new_expense)
 	if err != nil {
 		return nil, err
 	}
-	response_entity := payment_entity.GetToResp()
+	response_entity := expense_entity.GetToResp()
 	return response_entity, nil
 }
-
-// func payPaymentController(context *gin.Context) (*entities.PaymentEntityResponse, error) {
-
-// }

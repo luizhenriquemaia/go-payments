@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-type PaymentFactory struct{}
+type ExpenseFactory struct{}
 
-func (factory *PaymentFactory) GetFromDb(
+func (factory *ExpenseFactory) GetFromDb(
 	id int64,
 	description string,
 	cost_center int,
@@ -37,7 +37,7 @@ func (factory *PaymentFactory) GetFromDb(
 	}
 }
 
-func (factory *PaymentFactory) GetToResp(entity *entities.ExpenseEntity) *entities.ExpenseEntityResponse {
+func (factory *ExpenseFactory) GetToResp(entity *entities.ExpenseEntity) *entities.ExpenseEntityResponse {
 	return &entities.ExpenseEntityResponse{
 		Id:          entity.Id,
 		Description: entity.Description,

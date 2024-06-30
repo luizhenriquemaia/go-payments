@@ -15,15 +15,15 @@ var (
 	ErrCreateFailed = errors.New("não foi possível criar pagamento com os dados informados")
 )
 
-type SqlRepository struct {
+type ExpensesRepository struct {
 	db *sql.DB
 }
 
-func ExpensesRepository(db *sql.DB) *SqlRepository {
-	return &SqlRepository{db}
+func GetExpensesRepository(db *sql.DB) *ExpensesRepository {
+	return &ExpensesRepository{db: db}
 }
 
-func (repo *SqlRepository) GetFilteredRows(
+func (repo *ExpensesRepository) GetFilteredRows(
 	status enums.ExpenseStatus,
 	cost_center enums.CostCenter,
 ) (*sql.Rows, error) {
@@ -53,7 +53,7 @@ func (repo *SqlRepository) GetFilteredRows(
 	}
 }
 
-func (repo *SqlRepository) FetchByStatusCC(
+func (repo *ExpensesRepository) FetchByStatusCC(
 	status enums.ExpenseStatus,
 	cost_center enums.CostCenter,
 ) (*[]entities.ExpenseEntity, error) {
@@ -83,7 +83,7 @@ func (repo *SqlRepository) FetchByStatusCC(
 		expenses_db = append(expenses_db, expense)
 	}
 
-	factory := factories.PaymentFactory{}
+	factory := factories.ExpenseFactory{}
 	entities := make([]entities.ExpenseEntity, len(expenses_db))
 	for i, expense := range expenses_db {
 		entities[i] = factory.GetFromDb(
@@ -100,7 +100,7 @@ func (repo *SqlRepository) FetchByStatusCC(
 	return &entities, nil
 }
 
-func (repo *SqlRepository) setDocument(id int) (*string, error) {
+func (repo *ExpensesRepository) setDocument(id int) (*string, error) {
 	new_document := ""
 	err := repo.db.QueryRow(`
 		UPDATE expense 
@@ -115,7 +115,7 @@ func (repo *SqlRepository) setDocument(id int) (*string, error) {
 	return &new_document, nil
 }
 
-func (repo *SqlRepository) Add(add_entity *entities.AddExpenseEntity) (*entities.ExpenseEntity, error) {
+func (repo *ExpensesRepository) Add(add_entity *entities.AddExpenseEntity) (*entities.ExpenseEntity, error) {
 	to_db := add_entity.GetToDb()
 	new_id, new_status := -1, -1
 	err := repo.db.QueryRow(`
@@ -141,7 +141,7 @@ func (repo *SqlRepository) Add(add_entity *entities.AddExpenseEntity) (*entities
 		return nil, errors.New("não foi possível retornar um nome de documento para a nova despesa adicionada")
 	}
 
-	factory := &factories.PaymentFactory{}
+	factory := &factories.ExpenseFactory{}
 	retrieve_entity := factory.GetFromDb(
 		int64(new_id),
 		to_db.Description,
