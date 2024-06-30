@@ -6,7 +6,6 @@ import (
 	"go-payments/internal/expenses/enums"
 	"go-payments/internal/expenses/factories"
 	"go-payments/internal/expenses/repositories"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,7 +44,6 @@ func GetExpensesController(context *gin.Context) (*[]entities.ExpenseEntityRespo
 
 func AddExpensesController(context *gin.Context) (*entities.ExpenseEntityResponse, error) {
 	var new_expense entities.AddExpenseEntity
-	log.Printf("controller 13 %+v", new_expense)
 	if err := context.ShouldBind(&new_expense); err != nil {
 		return nil, err
 	}
