@@ -49,6 +49,20 @@ func (account PaymentAccount) String() string {
 	return PaymentAccounts[account]
 }
 
+func (method PaymentMethod) IsValid() bool {
+	if method >= 0 && method <= 2 {
+		return true
+	}
+	return false
+}
+
+func (account PaymentAccount) IsValid() bool {
+	if account >= 0 && account <= 2 {
+		return true
+	}
+	return false
+}
+
 func GetPaymentMethodByValue(method int) (PaymentMethod, error) {
 	if method < -1 || method > 2 {
 		return PaymentMethodNotInformed, errors.New("método de pagamento inválido")
