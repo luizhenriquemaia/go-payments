@@ -23,7 +23,7 @@ func main() {
 
 	database.Init_db(embedMigrations)
 
-	utils.Init_custom_validators()
+	utils.InitCustomValidators()
 
 	app := gin.New()
 

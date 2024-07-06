@@ -13,7 +13,7 @@ type Enum interface {
 	IsValid() bool
 }
 
-func Validate_enum(field_level validator.FieldLevel) bool {
+func validateEnum(field_level validator.FieldLevel) bool {
 	value, ok := field_level.Field().Interface().(Enum)
 	if !ok {
 		log.Printf("fail on converting Enum %v", field_level)
@@ -22,7 +22,7 @@ func Validate_enum(field_level validator.FieldLevel) bool {
 	return value.IsValid()
 }
 
-func Validate_only_digits(field_level validator.FieldLevel) bool {
+func validateOnlyDigits(field_level validator.FieldLevel) bool {
 	request_value, ok := field_level.Field().Interface().(string)
 	if !ok {
 		log.Printf("fail on converting to string the value %v", field_level.Field().Interface())
@@ -38,7 +38,7 @@ func Validate_only_digits(field_level validator.FieldLevel) bool {
 	return false
 }
 
-func Validate_equal_length(field_level validator.FieldLevel) bool {
+func validateEqualLength(field_level validator.FieldLevel) bool {
 	request_value := field_level.Field().Interface().(string)
 	validation_length, err := strconv.ParseInt(field_level.Param(), 10, 0)
 	if err != nil {
@@ -50,7 +50,7 @@ func Validate_equal_length(field_level validator.FieldLevel) bool {
 	return false
 }
 
-func Validate_min_length(field_level validator.FieldLevel) bool {
+func validateMinLength(field_level validator.FieldLevel) bool {
 	request_value := field_level.Field().Interface().(string)
 	min_length, err := strconv.ParseInt(field_level.Param(), 10, 0)
 	if err != nil {
@@ -62,7 +62,7 @@ func Validate_min_length(field_level validator.FieldLevel) bool {
 	return false
 }
 
-func Validate_max_length(field_level validator.FieldLevel) bool {
+func validateMaxLength(field_level validator.FieldLevel) bool {
 	request_value := field_level.Field().Interface().(string)
 	max_length, err := strconv.ParseInt(field_level.Param(), 10, 0)
 	if err != nil {
@@ -74,21 +74,25 @@ func Validate_max_length(field_level validator.FieldLevel) bool {
 	return false
 }
 
-func Init_custom_validators() {
+// func ValidateDueDate(field_level validator.FieldLevel) bool {
+// 	now :=
+// }
+
+func InitCustomValidators() {
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		validate.RegisterValidation("enum", Validate_enum)
+		validate.RegisterValidation("enum", validateEnum)
 	}
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		validate.RegisterValidation("only_digits", Validate_only_digits)
+		validate.RegisterValidation("only_digits", validateOnlyDigits)
 	}
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		validate.RegisterValidation("equal_length", Validate_equal_length)
+		validate.RegisterValidation("equal_length", validateEqualLength)
 	}
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		validate.RegisterValidation("min_length", Validate_min_length)
+		validate.RegisterValidation("min_length", validateMinLength)
 	}
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		validate.RegisterValidation("max_length", Validate_max_length)
+		validate.RegisterValidation("max_length", validateMaxLength)
 	}
 	log.Print("custom validators loaded")
 }
