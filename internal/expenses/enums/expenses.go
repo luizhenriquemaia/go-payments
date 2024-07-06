@@ -60,6 +60,10 @@ func (status ExpenseStatus) String() string {
 	return ExpenseStatuses[status]
 }
 
+func (status ExpenseStatus) CheckCanPay() bool {
+	return ExpenseStatuses[status] != "paid"
+}
+
 func GetCostCenterByValue(cc int) (CostCenter, error) {
 	if cc < -1 || cc > 3 {
 		return CcNotInformed, errors.New("centro de custo inválido")

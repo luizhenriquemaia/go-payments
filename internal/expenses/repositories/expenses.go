@@ -23,6 +23,37 @@ func GetExpensesRepository(db *sql.DB) *ExpensesRepository {
 	return &ExpensesRepository{db: db}
 }
 
+func (repo *ExpensesRepository) FetchId(id int64) (*entities.ExpenseEntity, error) {
+	row := repo.db.QueryRow(`SELECT * FROM expense WHERE id=$1`, id)
+	var expense_db models.ExpenseModel
+	if err := row.Scan(
+		&expense_db.Id,
+		&expense_db.Description,
+		&expense_db.Cost_center,
+		&expense_db.Status,
+		&expense_db.Bar_code,
+		&expense_db.Updated_at,
+		&expense_db.Created_at,
+		&expense_db.Document,
+	); err != nil {
+		log.Printf("parsing filtered expense to entity in get expenses error = %v", err)
+		return nil, errors.New("não foi possível retornar as despesas filtradas")
+	}
+
+	factory := factories.ExpenseFactory{}
+	entity := factory.GetFromDb(
+		expense_db.Id,
+		expense_db.Description,
+		expense_db.Cost_center,
+		expense_db.Status,
+		expense_db.Bar_code,
+		expense_db.Document,
+		expense_db.Updated_at,
+		expense_db.Created_at,
+	)
+	return &entity, nil
+}
+
 func (repo *ExpensesRepository) GetFilteredRows(
 	status enums.ExpenseStatus,
 	cost_center enums.CostCenter,
@@ -153,4 +184,20 @@ func (repo *ExpensesRepository) Add(add_entity *entities.AddExpenseEntity) (*ent
 		to_db.Created_at,
 	)
 	return &retrieve_entity, nil
+}
+
+func (repo *ExpensesRepository) UpdateStatus(id int64, status enums.ExpenseStatus) error {
+	query_result, err := repo.db.Exec(`
+		UPDATE expense
+		SET status=$2
+		WHERE id=$1
+	`, id, status)
+	if err != nil {
+		log.Printf("update status expense error = %v | id = %v | status = %v", err, id, status)
+		return errors.New("não foi possível atualizar o status da despesa")
+	}
+	if rows_quantity, _ := query_result.RowsAffected(); rows_quantity == 0 {
+		return errors.New("nenhuma despesa encontrada durante a atualização de status")
+	}
+	return nil
 }
