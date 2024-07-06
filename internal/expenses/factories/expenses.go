@@ -16,6 +16,7 @@ func (factory *ExpenseFactory) GetFromDb(
 	status int,
 	bar_code string,
 	document string,
+	due_date time.Time,
 	updated_at time.Time,
 	created_at time.Time,
 ) entities.ExpenseEntity {
@@ -32,6 +33,7 @@ func (factory *ExpenseFactory) GetFromDb(
 		Status:      status_enum,
 		Bar_code:    bar_code,
 		Document:    document,
+		Due_date:    due_date.In(brazil_tz),
 		Updated_at:  updated_at.In(brazil_tz),
 		Created_at:  created_at.In(brazil_tz),
 	}
@@ -45,6 +47,7 @@ func (factory *ExpenseFactory) GetToResp(entity *entities.ExpenseEntity) *entiti
 		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
+		Due_date:    entity.Due_date,
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,
 	}

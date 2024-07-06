@@ -48,6 +48,7 @@ func (repo *ExpensesRepository) FetchId(id int64) (*entities.ExpenseEntity, erro
 		expense_db.Status,
 		expense_db.Bar_code,
 		expense_db.Document,
+		expense_db.Due_date,
 		expense_db.Updated_at,
 		expense_db.Created_at,
 	)
@@ -107,6 +108,7 @@ func (repo *ExpensesRepository) FetchByStatusCC(
 			&expense.Updated_at,
 			&expense.Created_at,
 			&expense.Document,
+			&expense.Due_date,
 		); err != nil {
 			log.Printf("parsing filtered expense to entity in get expenses error = %v", err)
 			return nil, errors.New("não foi possível retornar as despesas filtradas")
@@ -124,6 +126,7 @@ func (repo *ExpensesRepository) FetchByStatusCC(
 			expense.Status,
 			expense.Bar_code,
 			expense.Document,
+			expense.Due_date,
 			expense.Updated_at,
 			expense.Created_at,
 		)
@@ -150,14 +153,15 @@ func (repo *ExpensesRepository) Add(add_entity *entities.AddExpenseEntity) (*ent
 	to_db := add_entity.GetToDb()
 	new_id, new_status := -1, -1
 	err := repo.db.QueryRow(`
-		INSERT INTO expense(description, cost_center, bar_code, document, updated_at, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO expense(description, cost_center, bar_code, document, due_date, updated_at, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, status
 		`,
 		to_db.Description,
 		to_db.Cost_center,
 		to_db.Bar_code,
 		to_db.Document,
+		to_db.Due_date,
 		to_db.Updated_at,
 		to_db.Created_at,
 	).Scan(&new_id, &new_status)
@@ -180,6 +184,7 @@ func (repo *ExpensesRepository) Add(add_entity *entities.AddExpenseEntity) (*ent
 		new_status,
 		to_db.Bar_code,
 		*new_document,
+		to_db.Due_date,
 		to_db.Updated_at,
 		to_db.Created_at,
 	)

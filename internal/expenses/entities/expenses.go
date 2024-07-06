@@ -13,6 +13,7 @@ type ExpenseEntity struct {
 	Status      enums.ExpenseStatus `json:"status"`
 	Bar_code    string              `json:"bar_code"`
 	Document    string              `json:"document"`
+	Due_date    time.Time           `json:"due_date"`
 	Updated_at  time.Time           `json:"updated_at"`
 	Created_at  time.Time           `json:"created_at"`
 }
@@ -24,6 +25,7 @@ type ExpenseEntityResponse struct {
 	Status      string    `json:"status"`
 	Bar_code    string    `json:"bar_code"`
 	Document    string    `json:"document"`
+	Due_date    time.Time `json:"due_date"`
 	Updated_at  time.Time `json:"updated_at"`
 	Created_at  time.Time `json:"created_at"`
 }
@@ -37,6 +39,7 @@ type AddExpenseEntity struct {
 	Description string           `binding:"required,min_length=3,max_length=150"`
 	Cost_center enums.CostCenter `binding:"required,enum"`
 	Bar_code    string           `binding:"required,only_digits,equal_length=47"`
+	Due_date    time.Time        `binding:"required"`
 }
 
 type AddExpenseDb struct {
@@ -44,6 +47,7 @@ type AddExpenseDb struct {
 	Cost_center enums.CostCenter
 	Bar_code    string
 	Document    string
+	Due_date    time.Time
 	Updated_at  time.Time
 	Created_at  time.Time
 }
@@ -55,6 +59,7 @@ func (entity *AddExpenseEntity) GetToDb() *AddExpenseDb {
 		Cost_center: entity.Cost_center,
 		Bar_code:    entity.Bar_code,
 		Document:    now.Format("200601021504") + strconv.Itoa(int(entity.Cost_center)),
+		Due_date:    entity.Due_date,
 		Updated_at:  now,
 		Created_at:  now,
 	}
@@ -69,6 +74,7 @@ func (entity *ExpenseEntity) GetToResp() *ExpenseEntityResponse {
 		Status:      entity.Status.String(),
 		Bar_code:    entity.Bar_code,
 		Document:    entity.Document,
+		Due_date:    entity.Due_date,
 		Updated_at:  entity.Updated_at,
 		Created_at:  entity.Created_at,
 	}
