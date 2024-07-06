@@ -1,7 +1,9 @@
 package entities
 
 import (
+	"errors"
 	"go-payments/internal/expenses/enums"
+	"go-payments/utils"
 	"strconv"
 	"time"
 )
@@ -39,7 +41,7 @@ type AddExpenseEntity struct {
 	Description string           `binding:"required,min_length=3,max_length=150"`
 	Cost_center enums.CostCenter `binding:"required,enum"`
 	Bar_code    string           `binding:"required,only_digits,equal_length=47"`
-	Due_date    time.Time        `binding:"required"`
+	Due_date    string           `binding:"required"`
 }
 
 type AddExpenseDb struct {
@@ -52,17 +54,21 @@ type AddExpenseDb struct {
 	Created_at  time.Time
 }
 
-func (entity *AddExpenseEntity) GetToDb() *AddExpenseDb {
+func (entity *AddExpenseEntity) GetToDb() (*AddExpenseDb, error) {
 	now := time.Now().UTC()
+	due_datetime, err := utils.ParseDateStrToTime(entity.Due_date)
+	if err != nil {
+		return nil, errors.New("data de vencimento inválida, por favor certifique-se que ela esteja no formato YYYY-MM-DD")
+	}
 	return &AddExpenseDb{
 		Description: entity.Description,
 		Cost_center: entity.Cost_center,
 		Bar_code:    entity.Bar_code,
 		Document:    now.Format("200601021504") + strconv.Itoa(int(entity.Cost_center)),
-		Due_date:    entity.Due_date,
+		Due_date:    *due_datetime,
 		Updated_at:  now,
 		Created_at:  now,
-	}
+	}, nil
 }
 
 // Adapter method to get payment entity to response

@@ -150,9 +150,12 @@ func (repo *ExpensesRepository) setDocument(id int) (*string, error) {
 }
 
 func (repo *ExpensesRepository) Add(add_entity *entities.AddExpenseEntity) (*entities.ExpenseEntity, error) {
-	to_db := add_entity.GetToDb()
+	to_db, err := add_entity.GetToDb()
+	if err != nil {
+		return nil, err
+	}
 	new_id, new_status := -1, -1
-	err := repo.db.QueryRow(`
+	err = repo.db.QueryRow(`
 		INSERT INTO expense(description, cost_center, bar_code, document, due_date, updated_at, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id, status

@@ -74,10 +74,6 @@ func validateMaxLength(field_level validator.FieldLevel) bool {
 	return false
 }
 
-// func ValidateDueDate(field_level validator.FieldLevel) bool {
-// 	now :=
-// }
-
 func InitCustomValidators() {
 	if validate, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		validate.RegisterValidation("enum", validateEnum)
