@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func Get_db() *sql.DB {
+func GetDb() *sql.DB {
 	connection_str := os.Getenv("POSTGRES_CONNECTION")
 
 	if connection_str == "" {
@@ -23,9 +23,9 @@ func Get_db() *sql.DB {
 	return db
 }
 
-func Init_db(file_sys embed.FS) {
-	db := Get_db()
-	repository := New_repository(db)
+func InitDb(file_sys embed.FS) {
+	db := GetDb()
+	repository := NewRepository(db)
 
 	if err := repository.Migrate(file_sys); err != nil {
 		log.Fatal(err)

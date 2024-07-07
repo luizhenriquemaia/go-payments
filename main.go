@@ -21,7 +21,7 @@ func main() {
 		log.Print("error loading .env file, running default settings")
 	}
 
-	database.Init_db(embedMigrations)
+	database.InitDb(embedMigrations)
 
 	utils.InitCustomValidators()
 

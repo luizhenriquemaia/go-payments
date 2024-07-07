@@ -16,7 +16,7 @@ func PayExpenseController(context *gin.Context) (*entities.PaymentRespEntity, er
 		return nil, err
 	}
 
-	repo_expenses := repositories.GetExpensesRepository(database.Get_db())
+	repo_expenses := repositories.GetExpensesRepository(database.GetDb())
 	expense, err := repo_expenses.FetchId(int64(new_payment.Expense_id))
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func PayExpenseController(context *gin.Context) (*entities.PaymentRespEntity, er
 		return nil, errors.New("essa despesa já foi paga")
 	}
 
-	repo_payments := repositories.GetPaymentsRepository(database.Get_db())
+	repo_payments := repositories.GetPaymentsRepository(database.GetDb())
 	payment_entity, err := repo_payments.Add(&new_payment)
 	if err != nil {
 		return nil, err
