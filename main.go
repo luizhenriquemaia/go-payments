@@ -12,21 +12,16 @@ import (
 )
 
 //go:embed configs/database/migrations/*.sql
-var embedMigrations embed.FS
+var embed_migrations embed.FS
 
 func main() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Print("error loading .env file, running default settings")
 	}
-
-	database.InitDb(embedMigrations)
-
+	database.InitDb(embed_migrations)
 	utils.InitCustomValidators()
-
 	app := gin.New()
-
 	router := app.Group("api/v1/")
 	{
 		routes.ExpensesRoutes(router)
