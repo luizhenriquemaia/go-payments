@@ -1,0 +1,11 @@
+-- +goose Up
+ALTER TABLE payment
+ADD COLUMN method SMALLINT NOT NULL DEFAULT -1;
+ALTER TABLE payment
+ADD COLUMN account SMALLINT NOT NULL DEFAULT -1;
+
+-- +goose Down
+ALTER TABLE payment
+DROP COLUMN method;
+ALTER TABLE payment
+DROP COLUMN account;
