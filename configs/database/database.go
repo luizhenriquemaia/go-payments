@@ -7,9 +7,22 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
+	_ "github.com/mattn/go-sqlite3"
 )
 
+func GetTestDb() *sql.DB {
+	db, err := sql.Open("sqlite3", "test.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return db
+}
+
 func GetDb() *sql.DB {
+	env_name := os.Getenv("ENV_NAME")
+	if env_name == "TEST" {
+		return GetTestDb()
+	}
 	connection_str := os.Getenv("POSTGRES_CONNECTION")
 
 	if connection_str == "" {
