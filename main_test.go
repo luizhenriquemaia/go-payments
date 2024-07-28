@@ -3,12 +3,9 @@ package main
 import (
 	"embed"
 	"go-payments/configs/database"
-	"io"
+	"go-payments/utils"
 	"log"
 	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 	"testing"
 
 	"github.com/pressly/goose/v3"
@@ -22,9 +19,11 @@ type DefaultTestSuite struct {
 	suite.Suite
 }
 
-func TestTestApisSuite(test *testing.T) {
+func TestMain(test *testing.T) {
 	test.Setenv("ENV_NAME", "TEST")
+	utils.CopyTestFiles()
 	suite.Run(test, &DefaultTestSuite{})
+	utils.RemoveTestFiles()
 }
 
 func getWorkDir() string {
@@ -60,56 +59,11 @@ func initTestDb() {
 	}
 }
 
-func copyFile(path string) {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatalf("couldn't open file to copy: %v", path)
-	}
-	defer file.Close()
-	new_file_name := strings.ReplaceAll(filepath.ToSlash(path), "/", "_")
-	dest_file, err := os.Create("temp/tests/" + new_file_name)
-	if err != nil {
-		log.Fatalf("couldn't create copy test file: %v", path)
-	}
-	defer dest_file.Close()
-	_, err = io.Copy(dest_file, file)
-	if err != nil {
-		log.Fatalf("couldn't copy test file: %v", path)
-	}
-}
-
-func copyTestFiles() {
-	log.Print("copying test files")
-	name_regex, err := regexp.Compile("^.+_test.go")
-	if err != nil {
-		log.Fatal("fail to parse test filename regex", err)
-	}
-	number_founded_files := 0
-	err = filepath.Walk("./internal", func(path string, info os.FileInfo, err error) error {
-		if name_regex.MatchString(info.Name()) {
-			number_founded_files += 1
-			copyFile(path)
-		}
-		return nil
-	})
-	if err != nil {
-		log.Fatal("fail to walk directory ", err)
-	}
-	log.Println("founded files", number_founded_files)
-}
-
-func removeTestFiles() {
-	dir := "temp/tests/"
-	os.RemoveAll(dir)
-	os.Mkdir(dir, 0777)
-}
-
 func (suite *DefaultTestSuite) SetupSuite() {
 	os.Setenv("ENV_NAME", "TEST")
 	main_dir := getWorkDir()
 	os.Setenv("MAIN_DIR", main_dir)
 	initTestDb()
-	copyTestFiles()
 }
 
 func (suite *DefaultTestSuite) TearDownSuite() {
@@ -119,5 +73,4 @@ func (suite *DefaultTestSuite) TearDownSuite() {
 	} else {
 		log.Print("test database removed")
 	}
-	removeTestFiles()
 }
