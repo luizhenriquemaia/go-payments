@@ -3,8 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"go-payments/internal/expenses/entities"
-	"go-payments/internal/expenses/factories"
+	"go-payments/internal/payments/entities"
+	"go-payments/internal/payments/factories"
 	"log"
 	"time"
 )

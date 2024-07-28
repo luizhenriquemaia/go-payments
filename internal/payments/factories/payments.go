@@ -1,8 +1,8 @@
 package factories
 
 import (
-	"go-payments/internal/expenses/entities"
-	"go-payments/internal/expenses/enums"
+	"go-payments/internal/payments/entities"
+	"go-payments/internal/payments/enums"
 	"log"
 	"time"
 )

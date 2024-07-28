@@ -1,22 +1,23 @@
-package controllers
+package services
 
 import (
 	"errors"
 	"go-payments/configs/database"
-	"go-payments/internal/expenses/entities"
-	"go-payments/internal/expenses/enums"
-	"go-payments/internal/expenses/repositories"
+	exp_enums "go-payments/internal/expenses/enums"
+	exp_repo "go-payments/internal/expenses/repositories"
+	"go-payments/internal/payments/entities"
+	"go-payments/internal/payments/repositories"
 
 	"github.com/gin-gonic/gin"
 )
 
-func PayExpenseController(context *gin.Context) (*entities.PaymentRespEntity, error) {
+func PayExpenseService(context *gin.Context) (*entities.PaymentRespEntity, error) {
 	var new_payment entities.PayExpenseEntity
 	if err := context.ShouldBind(&new_payment); err != nil {
 		return nil, err
 	}
 
-	repo_expenses := repositories.GetExpensesRepository(database.GetDb())
+	repo_expenses := exp_repo.GetExpensesRepository(database.GetDb())
 	expense, err := repo_expenses.FetchId(int64(new_payment.Expense_id))
 	if err != nil {
 		return nil, err
@@ -31,7 +32,7 @@ func PayExpenseController(context *gin.Context) (*entities.PaymentRespEntity, er
 		return nil, err
 	}
 
-	err = repo_expenses.UpdateStatus(expense.Id, enums.StatusPaid)
+	err = repo_expenses.UpdateStatus(expense.Id, exp_enums.StatusPaid)
 	if err != nil {
 		return nil, err
 	}

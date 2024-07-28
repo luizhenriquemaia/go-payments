@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"go-payments/internal/expenses/enums"
+	"go-payments/internal/payments/enums"
 	"time"
 )
 

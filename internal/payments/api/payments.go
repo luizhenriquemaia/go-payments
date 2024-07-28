@@ -1,26 +1,17 @@
-package routes
+package api
 
 import (
 	"errors"
 	"go-payments/utils"
 
+	"go-payments/internal/payments/services"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-
-	"go-payments/internal/expenses/controllers"
 )
 
-func getExpensesRoute(c *gin.Context) {
-	entitites, err := controllers.GetExpensesController(c)
-	if err != nil {
-		c.IndentedJSON(500, gin.H{"msg": err.Error()})
-		return
-	}
-	c.IndentedJSON(200, gin.H{"data": entitites})
-}
-
-func postExpensesRoute(c *gin.Context) {
-	entity, err := controllers.AddExpensesController(c)
+func PostPaymentRoute(c *gin.Context) {
+	entity, err := services.PayExpenseService(c)
 	if err != nil {
 		var validation_errors validator.ValidationErrors
 		if errors.As(err, &validation_errors) {
