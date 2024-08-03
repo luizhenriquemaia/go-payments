@@ -1,0 +1,19 @@
+-- +goose Up
+ALTER TABLE payment
+ADD COLUMN status SMALLINT NOT NULL DEFAULT 0;
+ALTER TABLE payment
+ADD COLUMN bar_code VARCHAR(60) NOT NULL;
+ALTER TABLE payment
+ADD COLUMN updated_at DATETIME NOT NULL;
+ALTER TABLE payment
+ADD COLUMN created_at DATETIME NOT NULL;
+
+-- +goose Down
+ALTER TABLE payment
+DROP COLUMN status;
+ALTER TABLE payment
+DROP COLUMN bar_code;
+ALTER TABLE payment
+DROP COLUMN updated_at;
+ALTER TABLE payment
+DROP COLUMN created_at;
