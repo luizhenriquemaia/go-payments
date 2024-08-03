@@ -47,8 +47,16 @@ func AddExpensesController(context *gin.Context) (*entities.ExpenseEntityRespons
 	if err := context.ShouldBind(&new_expense); err != nil {
 		return nil, err
 	}
+	resp_entity, err := AddExpensesService(&new_expense)
+	if err != nil {
+		return nil, err
+	}
+	return resp_entity, nil
+}
+
+func AddExpensesService(expense *entities.AddExpenseEntity) (*entities.ExpenseEntityResponse, error) {
 	repo := repositories.GetExpensesRepository(database.GetDb())
-	expense_entity, err := repo.Add(&new_expense)
+	expense_entity, err := repo.Add(expense)
 	if err != nil {
 		return nil, err
 	}
